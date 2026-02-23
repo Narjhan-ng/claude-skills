@@ -1,0 +1,758 @@
+# UI/UX Guidelines - Portale Wholesale
+# Configurazione design tokens, component patterns, interaction patterns, e terminologia
+
+version: "1.0.0"
+project: "Portale Wholesale Telecomunicazioni"
+last_updated: "2026-01-28"
+
+# ==============================================================================
+# DESIGN TOKENS
+# ==============================================================================
+
+design_tokens:
+
+  # Palette Colori
+  colors:
+    # Colori Primari
+    primary: "#003366"
+    secondary: "#0066CC"
+
+    # Stati
+    success: "#28A745"
+    warning: "#FFC107"
+    error: "#DC3545"
+    info: "#17A2B8"
+
+    # Testo
+    text:
+      primary: "#212529"
+      secondary: "#6C757D"
+      muted: "#ADB5BD"
+      inverse: "#FFFFFF"
+
+    # Sfondi
+    background:
+      main: "#FFFFFF"
+      alt: "#F8F9FA"
+      dark: "#343A40"
+      overlay: "rgba(0, 0, 0, 0.5)"
+
+    # Bordi
+    border:
+      default: "#DEE2E6"
+      light: "#E9ECEF"
+      dark: "#ADB5BD"
+
+    # Link
+    link:
+      default: "#0066CC"
+      hover: "#003366"
+      visited: "#551A8B"
+
+    # CSS Variables Naming
+    # Usa questi nomi per le variabili CSS:
+    # --color-primary, --color-secondary, --color-success, --color-warning,
+    # --color-error, --color-info, --color-text-primary, --color-text-secondary,
+    # --color-bg-main, --color-bg-alt, --color-border-default, etc.
+
+  # Sistema di Spacing
+  spacing:
+    unit: "8px"  # Base unit per tutti gli spacing
+
+    # Scale (multipli di 8px)
+    scale:
+      xs: "4px"    # 0.5x
+      sm: "8px"    # 1x
+      md: "16px"   # 2x
+      lg: "24px"   # 3x
+      xl: "32px"   # 4x
+      "2xl": "48px"  # 6x
+      "3xl": "64px"  # 8x
+
+    # Spacing Specifici
+    component_padding: "16px"
+    section_margin: "32px"
+    card_spacing: "16px"
+    form_field_gap: "16px"
+    button_padding_horizontal: "24px"
+    button_padding_vertical: "8px"
+
+    # Regola: Tutti i padding/margin devono essere multipli di 8px
+    # Eccezioni: Mai usare 15px, 18px, 25px, etc.
+
+  # Tipografia
+  typography:
+    # Font Families
+    font_family:
+      primary: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif"
+      monospace: "'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace"
+
+    # Font Sizes
+    font_size:
+      xs: "12px"
+      sm: "14px"
+      base: "16px"
+      lg: "18px"
+      xl: "20px"
+      "2xl": "24px"
+      "3xl": "32px"
+      "4xl": "40px"
+
+    # Font Weights
+    font_weight:
+      regular: 400
+      medium: 500
+      semibold: 600
+      bold: 700
+
+    # Line Heights
+    line_height:
+      tight: 1.25
+      normal: 1.5
+      relaxed: 1.75
+
+    # Letter Spacing
+    letter_spacing:
+      tight: "-0.025em"
+      normal: "0em"
+      wide: "0.025em"
+
+  # Border Radius
+  border_radius:
+    none: "0"
+    sm: "4px"
+    md: "8px"
+    lg: "12px"
+    xl: "16px"
+    full: "9999px"  # Per elementi circolari
+
+  # Shadows
+  shadows:
+    sm: "0 1px 2px rgba(0, 0, 0, 0.05)"
+    md: "0 4px 6px rgba(0, 0, 0, 0.1)"
+    lg: "0 10px 15px rgba(0, 0, 0, 0.1)"
+    xl: "0 20px 25px rgba(0, 0, 0, 0.15)"
+    inner: "inset 0 2px 4px rgba(0, 0, 0, 0.06)"
+
+  # Z-index Scale
+  z_index:
+    dropdown: 1000
+    sticky: 1020
+    fixed: 1030
+    modal_backdrop: 1040
+    modal: 1050
+    popover: 1060
+    tooltip: 1070
+
+  # Transitions
+  transitions:
+    duration:
+      fast: "150ms"
+      base: "250ms"
+      slow: "350ms"
+    easing:
+      default: "cubic-bezier(0.4, 0, 0.2, 1)"
+      in: "cubic-bezier(0.4, 0, 1, 1)"
+      out: "cubic-bezier(0, 0, 0.2, 1)"
+      in_out: "cubic-bezier(0.4, 0, 0.2, 1)"
+
+# ==============================================================================
+# COMPONENT PATTERNS
+# ==============================================================================
+
+component_patterns:
+
+  # Button Component
+  button:
+    base_class: "btn"
+
+    variants:
+      primary: "btn-primary"
+      secondary: "btn-secondary"
+      outline: "btn-outline"
+      text: "btn-text"
+      danger: "btn-danger"
+
+    sizes:
+      small: "btn-sm"
+      medium: "btn-md"
+      large: "btn-lg"
+
+    states:
+      - "hover"
+      - "active"
+      - "focus"
+      - "disabled"
+      - "loading"
+
+    required_props:
+      - "onClick"
+      - "aria-label"  # or aria-labelledby
+
+    structure: |
+      <button
+        className="btn btn-primary btn-md"
+        onClick={handleClick}
+        aria-label="Descrizione azione"
+        disabled={isLoading}
+      >
+        {isLoading ? <LoadingSpinner /> : "Salva"}
+      </button>
+
+  # Input Component
+  input:
+    base_class: "input"
+
+    variants:
+      - "input-text"
+      - "input-email"
+      - "input-password"
+      - "input-number"
+      - "input-tel"
+      - "input-search"
+
+    states:
+      - "focus"
+      - "error"
+      - "disabled"
+      - "readonly"
+
+    required_props:
+      - "id"
+      - "name"
+      - "label"
+      - "aria-describedby"  # per messaggi di errore
+
+    validation_pattern: true
+
+    structure: |
+      <div className="form-field">
+        <label htmlFor="email" className="form-label">
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          className="input input-email"
+          aria-describedby="email-error"
+          aria-invalid={hasError}
+        />
+        {hasError && (
+          <ErrorMessage id="email-error">
+            Email non valida
+          </ErrorMessage>
+        )}
+      </div>
+
+  # Card Component
+  card:
+    base_class: "card"
+
+    structure:
+      header: "card-header"
+      body: "card-body"
+      footer: "card-footer"
+
+    spacing: "16px"
+    border_radius: "8px"
+    shadow: "md"
+
+    example: |
+      <div className="card">
+        <div className="card-header">
+          <h3>Titolo Card</h3>
+        </div>
+        <div className="card-body">
+          Contenuto della card
+        </div>
+        <div className="card-footer">
+          <button className="btn btn-primary">Azione</button>
+        </div>
+      </div>
+
+  # Modal Component
+  modal:
+    base_class: "modal"
+
+    required_features:
+      - "close_button"
+      - "overlay"
+      - "escape_key_handler"
+      - "focus_trap"
+      - "scroll_lock"
+
+    accessibility:
+      role: "dialog"
+      aria_modal: true
+      aria_labelledby: "modal-title"
+      aria_describedby: "modal-description"
+
+    structure: |
+      <div className="modal-overlay" onClick={handleClose}>
+        <div
+          className="modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="modal-header">
+            <h2 id="modal-title">Titolo Modal</h2>
+            <button
+              className="modal-close"
+              onClick={handleClose}
+              aria-label="Chiudi modal"
+            >
+              ×
+            </button>
+          </div>
+          <div className="modal-body" id="modal-description">
+            Contenuto modal
+          </div>
+          <div className="modal-footer">
+            <button className="btn btn-secondary" onClick={handleClose}>
+              Annulla
+            </button>
+            <button className="btn btn-primary" onClick={handleConfirm}>
+              Conferma
+            </button>
+          </div>
+        </div>
+      </div>
+
+  # Table Component
+  table:
+    base_class: "table"
+
+    variants:
+      - "table-striped"
+      - "table-hover"
+      - "table-bordered"
+
+    responsive: true
+
+    structure: |
+      <div className="table-responsive">
+        <table className="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Nome</th>
+              <th scope="col">Email</th>
+              <th scope="col">Azioni</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Mario Rossi</td>
+              <td>mario@example.com</td>
+              <td>
+                <button className="btn btn-sm btn-text">Modifica</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+  # Form Component
+  form:
+    base_class: "form"
+
+    field_spacing: "16px"
+
+    validation:
+      trigger: "onBlur"
+      display: "inline"
+      position: "below_field"
+
+    structure: |
+      <form className="form" onSubmit={handleSubmit}>
+        <div className="form-field">
+          <label htmlFor="name" className="form-label">
+            Nome *
+          </label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            className="input"
+            required
+            aria-describedby="name-error"
+          />
+          {errors.name && (
+            <ErrorMessage id="name-error">
+              {errors.name}
+            </ErrorMessage>
+          )}
+        </div>
+
+        <div className="form-actions">
+          <button type="button" className="btn btn-secondary">
+            Annulla
+          </button>
+          <button type="submit" className="btn btn-primary" disabled={!isValid}>
+            Salva
+          </button>
+        </div>
+      </form>
+
+# ==============================================================================
+# INTERACTION PATTERNS
+# ==============================================================================
+
+interaction_patterns:
+
+  # Loading States
+  loading_states:
+    - type: "spinner"
+      use_case: "async_operations"
+      component: "LoadingSpinner"
+      placement: "center"
+      size: "md"
+      example: |
+        {isLoading && <LoadingSpinner size="md" />}
+
+    - type: "skeleton"
+      use_case: "initial_data_load"
+      component: "SkeletonLoader"
+      example: |
+        {isLoading ? <SkeletonLoader /> : <UserCard data={user} />}
+
+    - type: "progress_bar"
+      use_case: "multi_step_operations"
+      component: "ProgressBar"
+      show_percentage: true
+      example: |
+        <ProgressBar value={progress} max={100} />
+
+    - type: "button_loading"
+      use_case: "form_submission"
+      example: |
+        <button className="btn btn-primary" disabled={isLoading}>
+          {isLoading ? <LoadingSpinner size="sm" /> : "Salva"}
+        </button>
+
+  # Error Handling
+  error_handling:
+    - type: "toast"
+      severity: ["error", "warning", "info", "success"]
+      duration: "4000ms"
+      position: "top-right"
+      dismissible: true
+      example: |
+        toast.error("Si è verificato un errore", {
+          duration: 4000,
+          position: "top-right"
+        });
+
+    - type: "inline_error"
+      use_case: "form_validation"
+      component: "ErrorMessage"
+      color: "var(--color-error)"
+      icon: true
+      example: |
+        <ErrorMessage>
+          Il campo email è obbligatorio
+        </ErrorMessage>
+
+    - type: "error_boundary"
+      use_case: "component_errors"
+      fallback: true
+      example: |
+        <ErrorBoundary fallback={<ErrorFallback />}>
+          <UserDashboard />
+        </ErrorBoundary>
+
+    - type: "error_page"
+      use_case: "404_500_errors"
+      show_details: false  # in production
+      action_button: true
+
+  # Form Validation
+  form_validation:
+    trigger: "onBlur"
+    display: "inline"
+    position: "below_field"
+
+    rules:
+      - submit_disabled_when_errors: true
+      - show_success_feedback: true
+      - debounce_async_validation: "300ms"
+      - validate_on_change_after_first_blur: true
+
+    error_messages:
+      required: "{campo} è obbligatorio"
+      email: "Email non valida"
+      min_length: "{campo} deve essere di almeno {min} caratteri"
+      max_length: "{campo} non può superare {max} caratteri"
+      pattern: "{campo} non è nel formato corretto"
+
+  # Feedback & Notifications
+  feedback:
+    - type: "success_message"
+      display_duration: "3000ms"
+      auto_dismiss: true
+
+    - type: "confirmation_dialog"
+      use_case: "destructive_actions"
+      buttons: ["Annulla", "Conferma"]
+      example: |
+        <ConfirmDialog
+          title="Conferma eliminazione"
+          message="Sei sicuro di voler eliminare questo cliente?"
+          onConfirm={handleDelete}
+          onCancel={handleCancel}
+        />
+
+  # Navigation
+  navigation:
+    breadcrumbs: true
+    back_button: true
+    tab_navigation: true
+
+    active_state:
+      indicator: true
+      color: "var(--color-primary)"
+      font_weight: "semibold"
+
+# ==============================================================================
+# TERMINOLOGY (ITALIANO)
+# ==============================================================================
+
+terminology:
+  # Entità
+  entities:
+    customer: "Cliente"
+    wholesaler: "Wholesaler"  # o "WS" quando abbreviato
+    provider: "Fornitore"
+    admin: "Admin"  # o "A" quando abbreviato
+    user: "Utente"
+    invoice: "Fattura"
+    ticket: "Ticket"
+    request: "Richiesta"
+    status: "Stato"
+    order: "Ordine"
+    contract: "Contratto"
+    service: "Servizio"
+
+  # Azioni
+  actions:
+    create: "Crea"
+    new: "Nuovo"
+    add: "Aggiungi"
+    edit: "Modifica"
+    update: "Aggiorna"
+    delete: "Elimina"
+    remove: "Rimuovi"
+    save: "Salva"
+    cancel: "Annulla"
+    confirm: "Conferma"
+    send: "Invia"
+    submit: "Invia"
+    download: "Scarica"
+    upload: "Carica"
+    export: "Esporta"
+    import: "Importa"
+    search: "Cerca"
+    filter: "Filtra"
+    sort: "Ordina"
+    view: "Visualizza"
+    details: "Dettagli"
+    close: "Chiudi"
+    open: "Apri"
+    refresh: "Aggiorna"
+    reload: "Ricarica"
+
+  # Stati
+  states:
+    pending: "In attesa"
+    in_progress: "In elaborazione"
+    processing: "In elaborazione"
+    completed: "Completato"
+    done: "Completato"
+    failed: "Fallito"
+    error: "Errore"
+    success: "Successo"
+    cancelled: "Annullato"
+    approved: "Approvato"
+    rejected: "Rifiutato"
+    active: "Attivo"
+    inactive: "Inattivo"
+    enabled: "Abilitato"
+    disabled: "Disabilitato"
+
+  # Messaggi Comuni
+  messages:
+    loading: "Caricamento in corso..."
+    saving: "Salvataggio in corso..."
+    saved: "Salvato con successo"
+    error_generic: "Si è verificato un errore"
+    no_data: "Nessun dato disponibile"
+    no_results: "Nessun risultato trovato"
+    confirm_delete: "Sei sicuro di voler eliminare?"
+    required_field: "Campo obbligatorio"
+    invalid_format: "Formato non valido"
+
+  # Regole di Consistenza
+  consistency_rules:
+    - sempre_cliente_mai_customer: true
+    - sempre_fattura_mai_invoice: true
+    - usa_stesso_termine_per_stessa_entità: true
+    - no_mix_inglese_italiano: true
+
+# ==============================================================================
+# ACCESSIBILITY
+# ==============================================================================
+
+accessibility:
+  # Regole WCAG AA
+  wcag_level: "AA"
+
+  rules:
+    - always_use_semantic_html: true
+    - aria_labels_required: true
+    - keyboard_navigation: true
+    - focus_visible: true
+    - skip_to_content_link: true
+    - heading_hierarchy: true  # h1 > h2 > h3, non saltare livelli
+
+  # Contrasto Colori
+  color_contrast:
+    minimum_ratio: "4.5:1"  # WCAG AA per testo normale
+    large_text_ratio: "3:1"  # per testo >= 18px o bold >= 14px
+
+  # Alt Text
+  images:
+    alt_text_required: true
+    decorative_images_alt_empty: true  # alt="" per immagini decorative
+
+  # Form Accessibility
+  forms:
+    label_required: true  # ogni input deve avere label
+    error_announcement: true  # errori annunciati agli screen reader
+    fieldset_for_groups: true  # usa <fieldset> per gruppi di radio/checkbox
+
+  # Interactive Elements
+  interactive:
+    min_touch_target: "44px"  # dimensione minima area touch
+    focus_indicator_visible: true
+    keyboard_operable: true
+
+# ==============================================================================
+# NAMING CONVENTIONS
+# ==============================================================================
+
+naming_conventions:
+  components: "PascalCase"  # es: UserProfile, LoginForm
+  files: "kebab-case"  # es: user-profile.tsx, login-form.tsx
+  css_classes: "kebab-case"  # es: user-profile-card, login-form-field
+  functions: "camelCase"  # es: handleSubmit, getUserData
+  constants: "UPPER_SNAKE_CASE"  # es: API_ENDPOINT, MAX_RETRY_COUNT
+  variables: "camelCase"  # es: userData, isLoading
+
+  # Prefissi Comuni
+  prefixes:
+    handlers: "handle"  # es: handleClick, handleSubmit
+    boolean_variables: "is, has, should, can"  # es: isLoading, hasError
+    async_functions: "fetch, get, load"  # es: fetchUsers, loadData
+
+# ==============================================================================
+# FORBIDDEN PATTERNS
+# ==============================================================================
+
+forbidden_patterns:
+  # Mai usare inline styles
+  inline_styles:
+    forbidden: true
+    reason: "Usa classi CSS per mantenere coerenza e riusabilità"
+    example_bad: '<div style={{color: "red", padding: "15px"}}>Text</div>'
+    example_good: '<div className="text-error spacing-md">Text</div>'
+
+  # Mai hardcodare colori
+  hardcoded_colors:
+    forbidden: true
+    reason: "Usa design tokens per mantenere coerenza palette"
+    example_bad: "color: #FF0000"
+    example_good: "color: var(--color-error)"
+
+  # Mai usare magic numbers
+  magic_numbers:
+    forbidden: true
+    reason: "Usa costanti denominate per chiarezza"
+    example_bad: "setTimeout(() => {}, 5000)"
+    example_good: |
+      const TOAST_DURATION = 5000;
+      setTimeout(() => {}, TOAST_DURATION);
+
+  # Mai spacing inconsistenti
+  inconsistent_spacing:
+    forbidden: true
+    reason: "Usa scale definita (multipli di 8px)"
+    example_bad: "padding: 15px; margin: 23px;"
+    example_good: "padding: 16px; margin: 24px;"
+
+  # Mai label inglesi nell'UI
+  english_labels_in_ui:
+    forbidden: true
+    reason: "UI deve essere completamente in italiano"
+    example_bad: '<button>Save</button>'
+    example_good: '<button>Salva</button>'
+
+  # Mai omettere accessibilità
+  missing_accessibility:
+    forbidden: true
+    reason: "Accessibilità è obbligatoria per tutti i componenti"
+    example_bad: '<button onClick={handleClick}>X</button>'
+    example_good: '<button onClick={handleClick} aria-label="Chiudi">X</button>'
+
+# ==============================================================================
+# PROJECT-SPECIFIC PATTERNS
+# ==============================================================================
+
+project_specific:
+  # Portale Wholesale specifico
+
+  # Terminologia Specifica Telecomunicazioni
+  telecom_terms:
+    np: "Number Portability"  # o "Portabilità Numero"
+    fiber_access: "Accesso Fibra"
+    migration: "Migrazione"
+    coverage: "Copertura"
+
+  # Struttura Navigazione
+  navigation_structure:
+    main_sections:
+      - "Dashboard"
+      - "Clienti"
+      - "Fatture"
+      - "Richieste"
+      - "Ticket"
+
+    wholesaler_view:
+      - "I Miei Clienti"
+      - "Le Mie Fatture"
+      - "Fatture Fornitore"
+      - "Nuova Richiesta"
+      - "Stato Richieste"
+      - "Ticket Aperti"
+
+    admin_view:
+      - "Dashboard"
+      - "Richieste Wholesaler"
+      - "Gestione Richieste"
+
+  # Stati Richieste Specifiche
+  request_states:
+    - "Nuova"
+    - "In lavorazione"
+    - "In attesa informazioni"
+    - "Completata"
+    - "Annullata"
+
+  # Tipologie Richieste
+  request_types:
+    - "Inserimento Nuovo Cliente"
+    - "Richiesta Number Portability"
+    - "Accesso Fibra"
+    - "Migrazione"
+    - "Nuovo Numero"
