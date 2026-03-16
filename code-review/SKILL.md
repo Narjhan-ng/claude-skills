@@ -5,180 +5,75 @@ user-invocable: true
 argument-hint: "[file|directory|fase N]"
 ---
 
-# Code Review — Review Semantica del Codice
+# Code Review — Review Semantica
 
-Analizza il codice per problemi che un linter non può trovare: responsabilità miste, naming debole, accoppiamento nascosto, edge case non gestiti, incoerenza con le convenzioni del progetto.
-
-**Non duplica linter o tool statici** — si concentra su ciò che richiede comprensione semantica del codice e del suo contesto.
+Analizza il codice per problemi che un linter non trova: responsabilità miste, naming debole, accoppiamento nascosto, edge case non gestiti, incoerenza con le convenzioni. Non duplica linter o tool statici.
 
 **Argomenti:** `<file>` | `<directory>` | `fase <N>`
 
 ---
 
-## Flusso Principale
+## Flusso
 
-### 1. Determina lo scope della review
+### 1. Determina scope
 
-In base all'argomento ricevuto:
+- **`<file>`** — singolo file
+- **`<directory>`** — tutti i file sorgente (escludi test, config, asset)
+- **`fase <N>`** — leggi `phases/STATE.md`, fai review dei file prodotti nella fase
+- **Nessun argomento** — chiedi all'utente
 
-- **`<file>`** — Review di un singolo file
-- **`<directory>`** — Review di tutti i file sorgente nella directory (escludi test, config, asset)
-- **`fase <N>`** — Leggi `phases/STATE.md` per identificare la fase, poi fai review di tutti i file prodotti/modificati in quella fase (usa i deliverable dalla fase come guida)
-- **Nessun argomento** — Chiedi all'utente cosa vuole far revisionare
+### 2. Carica contesto
 
-### 2. Carica il contesto del progetto
+1. Se esiste `phases/CONTRACTS.md` → leggilo per convenzioni
+2. Se esiste `CLAUDE.md` → leggilo per regole e pattern
+3. Se nessuno esiste → inferisci dal codice circostante
 
-Prima di analizzare il codice, carica le convenzioni di riferimento:
+### 3. Analizza (7 dimensioni)
 
-1. **Se esiste `phases/CONTRACTS.md`** — leggilo per: naming, struttura cartelle, interfacce condivise, convenzioni API, schema dati
-2. **Se esiste `CLAUDE.md` nella root del progetto** — leggilo per: regole di codice, pattern da seguire, vincoli architetturali
-3. **Se nessuno dei due esiste** — usa il codice circostante (stessa directory, file correlati) per inferire le convenzioni
+**Responsabilità/Struttura:** SRP, funzioni >50 righe, troppi parametri, God Object/Function
 
-### 3. Analizza il codice
+**Naming:** nomi generici (data, temp, result), coerenza con progetto, abbreviazioni ambigue
 
-Per ogni file nello scope, valuta le seguenti dimensioni:
+**Gestione errori:** catch vuoti, messaggi utili, eccezioni specifiche, test per casi errore
 
-#### 3a. Responsabilità e Struttura
+**Accoppiamento:** DI vs hardcoded, dipendenze circolari, violazione Law of Demeter, accesso dati isolato
 
-- La classe/modulo ha una singola responsabilità chiara?
-- Le funzioni fanno una sola cosa? Sono sotto le 50 righe?
-- Ci sono funzioni con troppi parametri (> 4)?
-- Il livello di astrazione è coerente dentro ogni funzione?
-- Ci sono God Object, God Function o feature envy?
+**Edge case:** null/vuoti, race condition, collection vuote, limiti numerici, assunzioni implicite
 
-#### 3b. Naming e Leggibilità
+**Coerenza progetto:** rispetto CONTRACTS.md, struttura cartelle, pattern coerenti, tipi condivisi
 
-- I nomi rivelano l'intento? (no `data`, `temp`, `result`, `handle`, `process` generici)
-- Le convenzioni di naming sono coerenti con il progetto? (camelCase vs snake_case, prefissi, suffissi)
-- I nomi di funzioni descrivono l'azione? (`get_`, `calculate_`, `validate_`, `send_`)
-- Ci sono abbreviazioni ambigue o nomi fuorvianti?
-- I commenti spiegano il "perché" e non il "cosa"?
+**Sicurezza (se rilevante):** input validato, SQL parametrizzato, no secrets hardcoded, dati sensibili non esposti
 
-#### 3c. Gestione Errori
+### 4. Report
 
-- Gli errori sono gestiti esplicitamente (no catch vuoti, no `or None` silenzioso)?
-- I messaggi di errore sono utili per il debug?
-- Le eccezioni sono specifiche (no generic `Exception`)?
-- I casi di errore hanno test corrispondenti?
-
-#### 3d. Accoppiamento e Dipendenze
-
-- Le dipendenze sono iniettate o hardcoded?
-- Ci sono dipendenze circolari?
-- Il modulo dipende da dettagli implementativi di altri moduli?
-- L'accesso ai dati è isolato (pattern Repository o equivalente)?
-
-#### 3e. Edge Case e Robustezza
-
-- Input nulli/vuoti/malformati sono gestiti?
-- Ci sono race condition potenziali?
-- Le collection vuote sono gestite?
-- I limiti numerici sono considerati (overflow, divisione per zero)?
-- Ci sono assunzioni implicite non validate?
-
-#### 3f. Coerenza con il Progetto
-
-- Il codice segue le convenzioni in CONTRACTS.md?
-- La struttura dei file rispetta la struttura cartelle del progetto?
-- I pattern usati sono coerenti con il resto della codebase? (es: se il progetto usa Repository, un nuovo modulo non accede al DB direttamente)
-- I tipi/interfacce condivise sono usati correttamente?
-
-#### 3g. Sicurezza (solo se rilevante)
-
-- Input utente validato prima dell'uso?
-- Query SQL parametrizzate?
-- Secrets non hardcodati?
-- Dati sensibili non esposti in log o risposte?
-
-### 4. Genera il report
-
-Presenta i risultati raggruppati per severity:
-
-```markdown
-## Code Review: [scope]
-
-### Critico (da risolvere)
-Problemi che causano bug, vulnerabilità o violazione delle convenzioni del progetto.
-
-- **[FILE:RIGA]** — [Descrizione del problema]
-  - **Problema:** [spiegazione concisa]
-  - **Fix:** [codice o istruzione specifica]
-
-### Importante (consigliato)
-Problemi di design che degradano manutenibilità o leggibilità.
-
-- **[FILE:RIGA]** — [Descrizione]
-  - **Problema:** [spiegazione]
-  - **Fix:** [suggerimento]
-
-### Suggerimento (opzionale)
-Miglioramenti di stile o convenzione non bloccanti.
-
-- **[FILE:RIGA]** — [Descrizione]
-
-### Positivo
-Cose fatte bene da mantenere.
-
-- [Aspetto positivo notato]
-
-### Riepilogo
-| Dimensione | Valutazione |
-|---|---|
-| Responsabilità/SRP | buono / da migliorare / critico |
-| Naming | buono / da migliorare / critico |
-| Gestione errori | buono / da migliorare / critico |
-| Accoppiamento | buono / da migliorare / critico |
-| Edge case | buono / da migliorare / critico |
-| Coerenza progetto | buono / da migliorare / critico |
-
-**Prossimo passo:** [suggerimento — es: "Usa `/refactor src/services/order.py` per applicare i fix importanti"]
-```
+Raggruppa per severity:
+- **Critico** — bug, vulnerabilità, violazione convenzioni. Include FILE:RIGA, problema, fix
+- **Importante** — design che degrada manutenibilità. Include problema e suggerimento
+- **Suggerimento** — stile, non bloccante
+- **Positivo** — cose fatte bene
+- **Riepilogo** — tabella valutazione per dimensione (buono/da migliorare/critico)
 
 ### 5. Chiedi come procedere
 
-Dopo il report, chiedi all'utente:
-- Vuoi che applichi i fix critici? (procedi direttamente con le modifiche)
-- Vuoi che applichi tutti i fix? (critici + importanti)
-- Vuoi che generi un `/refactor` per le modifiche strutturali?
-- Solo informativo, nessuna modifica
+- Applicare fix critici?
+- Applicare tutti i fix?
+- Solo informativo?
 
 ---
 
-## Modalità speciale: Review post-fase
+## Review post-fase
 
-Quando invocato con `fase <N>` dopo un `phase-plan exec N`:
-
-1. Leggi `phases/NN-*.md` per capire gli obiettivi della fase
-2. Leggi `phases/CONTRACTS.md` per le convenzioni
-3. Identifica i file prodotti nella fase (dalla sezione "Deliverable" e "Stato del Mondo all'Uscita")
-4. Applica la review standard su quei file
-5. Verifica in aggiunta:
-   - I deliverable della fase sono tutti presenti?
-   - Il codice rispetta i contratti?
-   - Lo "Stato del Mondo all'Uscita" corrisponde alla realtà del codice?
-6. Segnala discrepanze tra fase pianificata e codice prodotto
+Quando invocato con `fase <N>`:
+1. Leggi la fase e CONTRACTS.md
+2. Review standard sui file prodotti
+3. Verifica in più: deliverable presenti, codice rispetta contratti, stato del mondo all'uscita corrisponde alla realtà
 
 ---
 
-## Regole Globali
+## Regole
 
-### Cosa questa skill NON fa
-
-- **NON** segnala problemi di formattazione (spazi, indentazione, punto e virgola) — quello è lavoro del linter
-- **NON** esegue il codice o i test — analizza solo staticamente con comprensione semantica
-- **NON** riscrive il codice autonomamente senza conferma dell'utente
-- **NON** valuta performance runtime — per quello servono profiler reali
-
-### Calibrazione della review
-
-- **Sii specifico**: "questa funzione fa X e Y, dovrebbe fare solo X" > "questa funzione fa troppe cose"
-- **Proponi il fix**: non solo il problema, ma come risolverlo concretamente
-- **Rispetta il contesto**: un prototipo non richiede la stessa rigore di codice di produzione
-- **Non essere pedante**: segnala solo ciò che ha impatto reale su manutenibilità, correttezza o leggibilità
-
-### Interazione con altre skill
-
-- Se la review identifica problemi strutturali significativi → suggerisci `/refactor`
-- Se la review trova comportamenti non testati → suggerisci `/tdd red`
-- Se la review è post-fase → i risultati informano il `phase-plan complete N`
-- Se la review trova problemi UI/UX → suggerisci `/ui-ux-check`
+- NON segnala problemi di formattazione (lavoro del linter)
+- NON esegue codice o test
+- NON riscrive codice senza conferma
+- Sii specifico e proponi il fix concreto
+- Rispetta il contesto (prototipo ≠ produzione)
